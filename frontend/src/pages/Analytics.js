@@ -37,8 +37,8 @@ const Analytics = () => {
 
     const categoryData = [
         { name: 'Sports', percentage: 38, color: 'var(--accent)' },
-        { name: 'Cruiser', percentage: 32, color: '#10b981' },
-        { name: 'Adventure', percentage: 18, color: '#f59e0b' },
+        { name: 'Cruiser', percentage: 32, color: '#87ceeb' },
+        { name: 'Adventure', percentage: 18, color: '#f471b5' },
         { name: 'Commuter', percentage: 12, color: '#8b5cf6' },
     ];
 
@@ -57,23 +57,36 @@ const Analytics = () => {
         { month: 'Feb', dealers: 185 },
     ];
 
+    const handleExport = () => {
+        alert(
+            `EXPORT REPORT INITIATED\n` +
+            `------------------------\n` +
+            `1. Total Volume: ₹${(totalVolume / 10000000).toFixed(2)}Cr\n` +
+            `2. Total Orders: ${orders.length}\n` +
+            `3. Active Dealers: ${activeDealersCount}\n` +
+            `4. Total Models Listed: ${bikes.length}\n` +
+            `5. Top Category: Sports (38%)\n` +
+            `6. Trend Status: Rising (+18.3%)`
+        );
+    };
+
     return (
-        <div>
+        <div className="analytics-page" style={{ minHeight: '100vh', padding: '2.5rem' }}>
             <div className="page-header">
                 <div className="page-header-row">
                     <div>
                         <h1>📊 Market Analytics</h1>
                         <p>Real-time market intelligence and trading insights for BikesZone</p>
                     </div>
-                    <button className="btn btn-outline">📥 Export Report</button>
+                    <button className="btn btn-outline" onClick={handleExport}>📥 Export Report</button>
                 </div>
             </div>
 
             <div className="stats-grid">
-                <StatCard icon="💰" label="Total Trade Volume" value={`₹${(totalVolume / 10000000).toFixed(2)}Cr`} trend="up" trendValue="24.5%" color="blue" />
-                <StatCard icon="📦" label="Total Orders" value={orders.length.toLocaleString()} trend="up" trendValue="18.3%" color="green" />
-                <StatCard icon="🤝" label="Active Dealers" value={activeDealersCount} trend="up" trendValue="12" color="orange" />
-                <StatCard icon="🏍️" label="Models Listed" value={bikes.length} trend="up" trendValue="8" color="purple" />
+                <StatCard icon="💰" label="Total Trade Volume" value={`₹${(totalVolume / 10000000).toFixed(2)}Cr`} trend="up" trendValue="24.5%" color="volume" bgImage="/assets/3d/3d_credit_card_1772291004048.png" />
+                <StatCard icon="📦" label="Total Orders" value={orders.length.toLocaleString()} trend="up" trendValue="18.3%" color="orders" bgImage="/assets/3d/3d_booking_list_1772291031749.png" />
+                <StatCard icon="🤝" label="Active Dealers" value={activeDealersCount} trend="up" trendValue="12" color="dealers" bgImage="/assets/3d/3d_handshake_1772291060796.png" />
+                <StatCard icon="🏍️" label="Models Listed" value={bikes.length} trend="up" trendValue="8" color="models" bgImage="/assets/3d/3d_motorbike_1772291087296.png" />
             </div>
 
             <div className="dashboard-grid dashboard-grid--2">

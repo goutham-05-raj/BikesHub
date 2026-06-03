@@ -1,177 +1,315 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import B2BProductCard from '../components/B2BProductCard';
+import StatCard from '../components/StatCard';
+import API_BASE_URL from '../config/api';
+import { useEffect } from 'react';
 
 const Home = () => {
-  const [activeQuote, setActiveQuote] = useState(0);
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const quotes = [
-    { text: "Life is a journey. Enjoy the ride.", author: "— Unknown" },
-    { text: "Four wheels move the body. Two wheels move the soul.", author: "— Anonymous" },
-    { text: "The road is there. You just have to decide when to take it.", author: "— Chris Guillebeau" },
-    { text: "Riding is not a hobby. It's a way of life.", author: "— BikesZone" },
-    { text: "Freedom on two wheels. Power in every deal.", author: "— BikesZone" },
-  ];
+  const [hubs] = useState([
+    { id: 1, name: "Vijayawada Central", bikes: 45, status: "High Demand", trend: "+12%", color: "#FF4D6D" },
+    { id: 2, name: "Guntur Hub", bikes: 32, status: "Active", trend: "+5%", color: "#0091EA" },
+    { id: 3, name: "Vizag Coastal", bikes: 88, status: "Peak", trend: "+18%", color: "#00C853" },
+    { id: 4, name: "Tirupati Route", bikes: 24, status: "Stable", trend: "+2%", color: "#FFAB00" },
+  ]);
+
+  const [featuredBikes, setFeaturedBikes] = useState([]);
+  const [loadingBikes, setLoadingBikes] = useState(true);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveQuote((prev) => (prev + 1) % quotes.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [quotes.length]);
-
-  const specialties = [
-    { icon: '🔒', title: 'Secure Online Payments', desc: 'End-to-end encrypted payments with security protection for every booking.' },
-    { icon: '✅', title: 'Verified Bike Fleet', desc: 'Every bike is regularly serviced and audited for safety and quality assurance.' },
-    { icon: '🏭', title: 'Premium Collections', desc: 'Choose from top brands — Bajaj, Royal Enfield, Yamaha, KTM, Honda.' },
-    { icon: '🚚', title: 'Express Delivery', desc: 'Get your bike delivered to your doorstep with real-time tracking.' },
-    { icon: '📊', title: 'Transparent Pricing', desc: 'No hidden charges. What you see is what you pay for your ride.' },
-    { icon: '💎', title: 'Built for Comfort', desc: 'Focus on ergonomic designs and high-performance engines for long rides.' },
-  ];
+    const fetchFeaturedBikes = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/bikes`);
+        const data = await response.json();
+        if (data.success) {
+          setFeaturedBikes(data.data.slice(0, 3));
+        }
+      } catch (error) {
+        console.error("Error fetching featured bikes:", error);
+      } finally {
+        setLoadingBikes(false);
+      }
+    };
+    fetchFeaturedBikes();
+  }, []);
 
   const stats = [
-    { value: '2,500+', label: 'Happy Riders', icon: '🏍️' },
-    { value: '180+', label: 'Verified Bikes', icon: '🤝' },
-    { value: '50k+', label: 'Kms Covered', icon: '🛣️' },
-    { value: '5+', label: 'Operating Cities', icon: '🏙️' },
+    { label: "Active Rentals", value: "1,248", icon: "⬡", color: "#FF4D6D" },
+    { label: "Bookit Utilization", value: "84%", icon: "◈", color: "#0091EA" },
+    { label: "Today's Revenue", value: "₹4.2L", icon: "◎", color: "#00C853" },
+    { label: "Pending Service", value: "12", icon: "◉", color: "#FFAB00" },
   ];
 
   return (
-    <div className="landing-page page-pale-black">
+    <div className="home-dash">
 
-      {/* ═══════ SECTION 1: 3D CINEMATIC HERO WITH VIDEO ═══════ */}
-      <section className="landing-hero">
-        {/* Video Background */}
-        <video
-          className="landing-hero-video"
-          autoPlay muted loop playsInline
-          onLoadedData={(e) => { e.target.playbackRate = 0.65; }}
-          src={`${process.env.PUBLIC_URL}/bikes/hero-video.mp4`}
-        />
-
-        {/* 3D Depth Layers */}
-        <div className="landing-hero-overlay"></div>
-        <div className="landing-3d-orb landing-3d-orb--1"></div>
-        <div className="landing-3d-orb landing-3d-orb--2"></div>
-        <div className="landing-3d-orb landing-3d-orb--3"></div>
-        <div className="landing-3d-ring landing-3d-ring--1"></div>
-        <div className="landing-3d-ring landing-3d-ring--2"></div>
-
-        {/* Floating Quote on Video */}
-        <div className="landing-video-quote" key={activeQuote}>
-          <div className="landing-video-quote-text">
-            "{quotes[activeQuote].text}"
+      {/* Header section */}
+      <div className="dash-header">
+        <div className="dash-title-area">
+          <div className="dash-eyebrow">
+            <span className="live-pulse" /> NETWORK OVERVIEW
           </div>
-          <div className="landing-video-quote-author">
-            {quotes[activeQuote].author}
+          <h1 className="dash-headline">Bookit <em className="shining-bookit">Command</em></h1>
+        </div>
+        <div className="dash-actions">
+          <button className="dash-btn dash-btn--outline">Download Report</button>
+          <button className="dash-btn dash-btn--primary" onClick={() => navigate('/inventory')}>
+            Manage Bookit <span className="arrow">→</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Top Stats */}
+      <div className="stat-grid">
+        {stats.map((s, i) => (
+          <StatCard 
+            key={i}
+            label={s.label}
+            value={s.value}
+            icon={s.icon}
+            glowColor={s.color}
+          />
+        ))}
+      </div>
+
+      <div className="dash-split">
+        {/* Active Hubs */}
+        <div className="dash-panel hub-panel">
+          <div className="panel-header">
+            <h2 className="panel-title">Regional Hubs</h2>
+            <button className="panel-link">View Map</button>
           </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="landing-hero-content">
-          <div className="landing-hero-badge">
-            <span className="landing-hero-badge-dot"></span>
-            India's Premier Bike Rental Platform
-          </div>
-
-          <h1 className="landing-hero-title">
-            The <span className="text-gradient">Journey</span> Begins <span>Here</span>
-          </h1>
-
-          <p className="landing-hero-subtitle">
-            Premium bike rentals for serious riders.
-            Transparent pricing. Verified bikes. Seamless experience.
-          </p>
-
-          <div className="landing-hero-cta">
-            <Link to="/inventory" className="btn btn-primary btn-lg landing-btn-glow">
-              🏍️ Browse Bikes
-            </Link>
-            <Link to="/about" className="btn btn-white-outline btn-lg">
-              📖 Learn More
-            </Link>
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="landing-scroll-indicator">
-          <span>Scroll to explore</span>
-          <div className="landing-scroll-arrow">↓</div>
-        </div>
-      </section>
-
-      {/* ═══════ SECTION 2: VISION ═══════ */}
-      <section className="landing-vision">
-        <div className="landing-vision-inner">
-          <div className="landing-vision-tag">Our Vision</div>
-          <blockquote className="landing-vision-quote">
-            "We believe every dealer deserves <em>direct access</em> to manufacturers,
-            every manufacturer deserves <em>transparent demand</em>, and every
-            transaction deserves <em>absolute trust</em>."
-          </blockquote>
-          <p className="landing-vision-desc">
-            BikesZone was built to eliminate the chaos of traditional bike distribution.
-            No more middlemen inflating prices. No more opaque deals. Just a clean, powerful
-            platform where serious traders do business — at scale.
-          </p>
-        </div>
-      </section>
-
-      {/* ═══════ SECTION 3: 3D SPECIALTY CARDS ═══════ */}
-      <section className="landing-specialties">
-        <div className="section-header">
-          <div className="section-tag">Why BikesZone</div>
-          <h2 className="section-title">Built Different. Built to Last.</h2>
-          <p className="section-desc">Six pillars that make BikesZone the most trusted B2B bike platform in India</p>
-        </div>
-        <div className="landing-specialties-grid">
-          {specialties.map((s, i) => (
-            <div className="landing-specialty-card" key={i}>
-              <div className="landing-specialty-glow"></div>
-              <div className="landing-specialty-icon">{s.icon}</div>
-              <h3 className="landing-specialty-title">{s.title}</h3>
-              <p className="landing-specialty-desc">{s.desc}</p>
-              <div className="landing-specialty-line"></div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ═══════ SECTION 4: STATS ═══════ */}
-      <section className="landing-stats">
-        <div className="landing-stats-inner">
-          <div className="landing-stats-quote">
-            <p>"The only impossible journey is the one you never begin."</p>
-            <span>— Tony Robbins</span>
-          </div>
-          <div className="landing-stats-grid">
-            {stats.map((s, i) => (
-              <div className="landing-stat-item" key={i}>
-                <div className="landing-stat-icon">{s.icon}</div>
-                <div className="landing-stat-value">{s.value}</div>
-                <div className="landing-stat-label">{s.label}</div>
+          <div className="hub-list">
+            {hubs.map(hub => (
+              <div key={hub.id} className="hub-row">
+                <div className="hub-info">
+                  <div className="hub-dot" style={{ background: hub.color, boxShadow: `0 0 10px ${hub.color}80` }} />
+                  <div>
+                    <div className="hub-name">{hub.name}</div>
+                    <div className="hub-status">{hub.status}</div>
+                  </div>
+                </div>
+                <div className="hub-metrics">
+                  <div className="hub-bikes">
+                    <span className="hub-num">{hub.bikes}</span>
+                    <span className="hub-unit">Units</span>
+                  </div>
+                  <div className="hub-trend" style={{ color: hub.color, background: `${hub.color}15` }}>{hub.trend}</div>
+                </div>
               </div>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* ═══════ SECTION 5: CLOSING ═══════ */}
-      <section className="landing-closing">
-        <div className="landing-closing-inner">
-          <div className="landing-closing-quote">
-            "It's not about the destination. It's about the ride — and who rides with you."
+        {/* Action Center */}
+        <div className="dash-panel action-panel">
+          <div className="panel-header">
+            <h2 className="panel-title">Quick Actions</h2>
           </div>
-          <p className="landing-closing-sub">
-            Join 180+ verified dealers and manufacturers building the future of motorcycle trade in India.
-          </p>
-          <div className="landing-closing-cta">
-            <Link to="/inventory" className="btn btn-primary btn-lg landing-btn-glow">
-              Start Trading Today →
-            </Link>
+          <div className="action-grid">
+            <div className="action-card" onClick={() => navigate('/orders')}>
+              <div className="ac-icon" style={{ borderColor: '#FF4D6D', color: '#FF4D6D', background: 'rgba(255,77,109,0.05)' }}>📋</div>
+              <div className="ac-name">Approve Orders</div>
+              <div className="ac-desc">5 pending verifications</div>
+            </div>
+            <div className="action-card" onClick={() => navigate('/inventory')}>
+              <div className="ac-icon" style={{ borderColor: '#0091EA', color: '#0091EA', background: 'rgba(0,145,234,0.05)' }}>🏍️</div>
+              <div className="ac-name">Add Vehicle</div>
+              <div className="ac-desc">Update Bookit inventory</div>
+            </div>
+            {user?.role === 'admin' && (
+              <div className="action-card" onClick={() => navigate('/live-location')}>
+                <div className="ac-icon" style={{ borderColor: '#00C853', color: '#00C853', background: 'rgba(0,200,83,0.05)' }}>📡</div>
+                <div className="ac-name">Live Location</div>
+                <div className="ac-desc">Admin GPS monitoring</div>
+              </div>
+            )}
+            <div className="action-card" onClick={() => navigate('/messages')}>
+              <div className="ac-icon" style={{ borderColor: '#FFAB00', color: '#FFAB00', background: 'rgba(255,171,0,0.05)' }}>💬</div>
+              <div className="ac-name">Dealer Comms</div>
+              <div className="ac-desc">3 unread messages</div>
+            </div>
           </div>
-          <div className="landing-closing-peace">🏍️</div>
         </div>
-      </section>
+      </div>
+
+      {/* Decorative full-width banner */}
+      <div className="dash-banner">
+        <div className="bn-content">
+          <div className="bn-tag">SYSTEM UPDATE</div>
+          <h3 className="bn-title">BikesHub OS v3.1 is Live</h3>
+          <p className="bn-desc">Experience the new bright cinematic command center. Faster routing, cleaner data, better visibility.</p>
+        </div>
+        <div className="bn-visual" />
+      </div>
+
+
+      {/* ── STYLES ── */}
+      <style>{`
+        .home-dash {
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
+          animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        .dash-header { display: flex; justify-content: space-between; align-items: flex-end; }
+        .dash-eyebrow {
+          display: flex; align-items: center; gap: 8px;
+          font-size: 0.75rem; font-weight: 800; letter-spacing: 0.2em;
+          color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;
+        }
+        .live-pulse {
+          width: 8px; height: 8px; border-radius: 50%; background: #FF4D6D;
+          box-shadow: 0 0 10px #FF4D6D; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        
+        .dash-headline {
+          font-family: 'Playfair Display', serif;
+          font-size: 4rem; font-weight: 900; margin: 0;
+          color: #16162A; letter-spacing: -0.02em; line-height: 1;
+        }
+        .dash-headline em {
+          font-style: italic;
+          background: var(--accent-gradient);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .dash-actions { display: flex; gap: 16px; }
+        .dash-btn {
+          padding: 14px 28px; border-radius: 14px; font-weight: 800; font-size: 0.95rem;
+          font-family: 'Outfit', sans-serif; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .dash-btn--outline {
+          background: #fff; border: 1px solid rgba(0,0,0,0.1);
+          color: #495057; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .dash-btn--outline:hover { background: #F8F9FA; color: #16162A; border-color: rgba(0,0,0,0.2); transform: translateY(-2px); }
+        
+        .dash-btn--primary {
+          background: var(--accent-gradient); color: #fff; border: none;
+          box-shadow: 0 10px 30px rgba(255,77,109,0.25); display: flex; align-items: center; gap: 8px;
+        }
+        .dash-btn--primary:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(255,77,109,0.35); filter: brightness(1.05); }
+        .dash-btn .arrow { transition: transform 0.2s; font-size: 1.2rem; }
+        .dash-btn--primary:hover .arrow { transform: translateX(6px); }
+
+        /* Split Panels */
+        .dash-split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+        
+        .dash-panel {
+          background: rgba(14, 165, 233, 0.05); backdrop-filter: blur(30px);
+          border: 1px solid rgba(14, 165, 233, 0.15); border-radius: 28px;
+          padding: 36px; box-shadow: 0 15px 40px rgba(14, 165, 233, 0.02);
+        }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .panel-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: #16162A; margin: 0; }
+        .panel-link { background: none; border: none; font-size: 0.9rem; font-weight: 800; color: var(--accent); cursor: pointer; transition: color 0.2s; }
+        .panel-link:hover { color: #16162A; }
+
+        /* Hub List */
+        .hub-list { display: flex; flex-direction: column; gap: 16px; }
+        .hub-row {
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 20px; background: #F8F9FA;
+          border: 1px solid rgba(0,0,0,0.03); border-radius: 20px;
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .hub-row:hover { background: #fff; transform: translateX(4px); box-shadow: 0 10px 20px rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+        .hub-info { display: flex; align-items: center; gap: 20px; }
+        .hub-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .hub-name { font-size: 1.05rem; font-weight: 800; color: #16162A; margin-bottom: 2px; }
+        .hub-status { font-size: 0.75rem; color: #868E96; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+        
+        .hub-metrics { display: flex; align-items: center; gap: 28px; text-align: right; }
+        .hub-bikes { display: flex; flex-direction: column; }
+        .hub-num { font-size: 1.3rem; font-weight: 900; color: #16162A; line-height: 1; }
+        .hub-unit { font-size: 0.7rem; color: #ADB5BD; font-weight: 800; text-transform: uppercase; margin-top: 4px; }
+        .hub-trend { font-size: 0.9rem; font-weight: 800; padding: 6px 12px; border-radius: 10px; }
+
+        /* Action Grid */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .action-card {
+          padding: 24px; background: #F8F9FA;
+          border: 1px solid rgba(0,0,0,0.04); border-radius: 20px;
+          cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .action-card:hover {
+          background: #fff; border-color: rgba(0,0,0,0.1);
+          transform: translateY(-4px); box-shadow: 0 15px 30px rgba(0,0,0,0.04);
+        }
+        .ac-icon {
+          width: 44px; height: 44px; border-radius: 12px; border: 1px solid;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 1.4rem; margin-bottom: 16px;
+        }
+        .ac-name { font-size: 1.05rem; font-weight: 800; color: #16162A; margin-bottom: 6px; }
+        .ac-desc { font-size: 0.8rem; color: #868E96; font-weight: 600; }
+
+        /* Fleet Grid */
+        .dash-fleet { margin-top: 10px; }
+        .fleet-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+            gap: 28px; 
+            padding-bottom: 20px;
+        }
+        .loading-shimmer {
+            padding: 60px;
+            background: #F8F9FA;
+            border-radius: 28px;
+            text-align: center;
+            color: #ADB5BD;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Banner */
+        .dash-banner {
+          position: relative; overflow: hidden;
+          background: linear-gradient(135deg, rgba(255,77,109,0.08) 0%, rgba(255,140,66,0.05) 100%);
+          border: 1px solid rgba(255,77,109,0.15); border-radius: 28px;
+          padding: 40px 48px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .bn-content { position: relative; z-index: 2; max-width: 550px; }
+        .bn-tag {
+          display: inline-block; font-size: 0.75rem; font-weight: 900;
+          color: #FF4D6D; background: rgba(255,77,109,0.1);
+          padding: 6px 14px; border-radius: 100px; letter-spacing: 0.15em; margin-bottom: 16px;
+        }
+        .bn-title { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; color: #16162A; margin: 0 0 10px; }
+        .bn-desc { font-size: 1.05rem; color: #495057; line-height: 1.6; margin: 0; font-weight: 500; }
+        
+        .bn-visual {
+          position: absolute; right: -50px; top: -50px;
+          width: 350px; height: 350px; border-radius: 50%;
+          background: radial-gradient(circle, rgba(255,140,66,0.15) 0%, transparent 70%);
+          filter: blur(30px); pointer-events: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+          .dash-split { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+          .dash-header { flex-direction: column; align-items: flex-start; gap: 24px; }
+          .dash-headline { font-size: 3rem; }
+          .action-grid { grid-template-columns: 1fr; }
+          .dash-banner { padding: 32px; }
+        }
+      `}</style>
     </div>
   );
 };

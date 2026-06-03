@@ -4,6 +4,25 @@ const db = require('../config/database');
 const staticBikes = [
   {
     id: 1,
+    name: "Continental GT 650",
+    brand: "Royal Enfield",
+    engine_cc: 650,
+    price: 3900,
+    bulk_price: 318000,
+    moq: 5,
+    stock: 85,
+    delivery_days: 12,
+    category: "Cruiser",
+    image_url: "/bikes/GT-650.jpeg",
+    features: JSON.stringify(["Twin Engine", "Retro Design", "650cc", "Premium"]),
+    rating: 4.6,
+    review_count: 62,
+    available: true,
+    verified: true,
+    manufacturer: "Royal Enfield Motors"
+  },
+  {
+    id: 2,
     name: "Pulsar NS 200",
     brand: "Bajaj",
     engine_cc: 200,
@@ -20,25 +39,6 @@ const staticBikes = [
     available: true,
     verified: true,
     manufacturer: "Bajaj Auto Ltd."
-  },
-  {
-    id: 2,
-    name: "Continental GT 650",
-    brand: "Royal Enfield",
-    engine_cc: 650,
-    price: 3900,
-    bulk_price: 318000,
-    moq: 5,
-    stock: 85,
-    delivery_days: 12,
-    category: "Cruiser",
-    image_url: "/bikes/gt650.jpeg",
-    features: JSON.stringify(["Twin Engine", "Retro Design", "650cc", "Premium"]),
-    rating: 4.6,
-    review_count: 62,
-    available: true,
-    verified: true,
-    manufacturer: "Royal Enfield Motors"
   },
   {
     id: 3,

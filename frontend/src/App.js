@@ -12,11 +12,45 @@ import Contact from "./pages/Contact";
 import Settings from "./pages/Settings";
 import Terms from "./pages/Terms";
 import Login from "./pages/Login";
+// SignUp disabled — only pre-approved accounts can access the app
+import LiveLocation from "./pages/LiveLocation";
+import ManageDealers from "./pages/ManageDealers";
+import MessagesDashboard from "./pages/MessagesDashboard";
+import Payment from "./pages/Payment";
+import FeedbackSubmission from "./pages/FeedbackSubmission";
+import UserFeedbackDashboard from "./pages/UserFeedbackDashboard";
+
+const GlobalLoader = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#fff5ec', fontFamily: 'Outfit, sans-serif' }}>
+    <style>{`
+      .global-spinner { width: 50px; height: 50px; border: 3px solid rgba(135, 206, 235, 0.1); border-top-color: #87ceeb; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    `}</style>
+    <div className="global-spinner"></div>
+    <p style={{ color: '#003366', fontWeight: 700, letterSpacing: '0.05em' }}>BIKESZONE SECURE GATEWAY</p>
+  </div>
+);
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
-  if (!user) return <Navigate to="/login" />;
+  if (loading) return <GlobalLoader />;
+  if (!user) return <Navigate to="/" />;
+  return children;
+};
+
+const AdminRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <GlobalLoader />;
+  if (!user) return <Navigate to="/" />;
+  if (user?.role !== 'admin') return <Navigate to="/dashboard" />;
+  return children;
+};
+
+const AuthRedirect = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <GlobalLoader />;
+  // Auto-redirect to dashboard when the user is logged in
+  if (user) return <Navigate to="/dashboard" />;
   return children;
 };
 
@@ -24,8 +58,9 @@ function App() {
   return (
     <AuthProvider>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={
+        <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Navigate to="/" />} />
+        <Route path="/dashboard" element={
           <ProtectedRoute>
             <DashboardLayout title="BikesZone" subtitle="B2B Marketplace">
               <Home />
@@ -83,7 +118,7 @@ function App() {
         } />
         <Route path="/messages" element={
           <ProtectedRoute>
-            <DashboardLayout title="Messages" subtitle="Communication">
+            <DashboardLayout title="FeedBack" subtitle="Community Support">
               <Contact />
             </DashboardLayout>
           </ProtectedRoute>
@@ -95,11 +130,51 @@ function App() {
             </DashboardLayout>
           </ProtectedRoute>
         } />
+        <Route path="/admin/messages" element={
+          <ProtectedRoute>
+            <DashboardLayout title="Messages & Feedback" subtitle="Admin Control">
+              <MessagesDashboard />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/feedback" element={
+          <ProtectedRoute>
+            <DashboardLayout title="Feedback" subtitle="Your Thoughts">
+              <FeedbackSubmission />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/feedback-history" element={
+          <ProtectedRoute>
+            <DashboardLayout title="Your Feedback" subtitle="History">
+              <UserFeedbackDashboard />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/live-location" element={
+          <AdminRoute>
+            <DashboardLayout title="Live Location" subtitle="Real-time Tracking">
+              <LiveLocation />
+            </DashboardLayout>
+          </AdminRoute>
+        } />
+        <Route path="/admin/dealers" element={
+          <AdminRoute>
+            <DashboardLayout title="Dealer Management" subtitle="Admin Control">
+              <ManageDealers />
+            </DashboardLayout>
+          </AdminRoute>
+        } />
         <Route path="/terms" element={
           <ProtectedRoute>
             <DashboardLayout title="Legal" subtitle="Terms & Policies">
               <Terms />
             </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/payment/:bookingId" element={
+          <ProtectedRoute>
+            <Payment />
           </ProtectedRoute>
         } />
       </Routes>

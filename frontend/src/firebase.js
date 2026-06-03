@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, setPersistence, browserSessionPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -19,6 +18,13 @@ const app = initializeApp(firebaseConfig);
 // Initialize services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const analytics = getAnalytics(app);
+
+// Use session persistence — login is required each new browser session.
+// This ensures the app always shows the login page after a fresh browser open
+// or after running `npm start`, instead of auto-logging in from saved credentials.
+setPersistence(auth, browserSessionPersistence).catch(console.error);
+
+// Only initialize analytics if appId is configured (avoids crash if .env is incomplete)
+export const analytics = null;
 
 export default app;

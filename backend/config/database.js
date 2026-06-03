@@ -9,7 +9,8 @@ try {
   const serviceAccount = require("./serviceAccountKey.json");
 
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccount),
+    projectId: serviceAccount.project_id
   });
 
   db = admin.firestore();

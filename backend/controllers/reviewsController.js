@@ -29,6 +29,33 @@ exports.getReviews = async (req, res, next) => {
   }
 };
 
+// Get all reviews (for admin dashboard)
+exports.getAllReviews = async (req, res, next) => {
+  try {
+    if (!db) {
+      return res.status(400).json({ success: false, message: 'Firestore not configured' });
+    }
+
+    const snapshot = await db.collection('reviews')
+      .orderBy('created_at', 'desc')
+      .get();
+
+    const reviews = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    res.json({
+      success: true,
+      data: reviews,
+      count: reviews.length
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Add review
 exports.addReview = async (req, res, next) => {
   try {
