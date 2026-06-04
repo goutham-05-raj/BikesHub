@@ -89,7 +89,7 @@ const Login = () => {
         // Step 2: Trigger backend to (re)create all demo users in Firebase Auth
         try {
           setError('⏳ Setting up demo account, please wait...');
-          const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:5002';
+          const backendUrl = process.env.REACT_APP_API_URL || 'http://';
           const resetRes = await fetch(`${backendUrl}/api/reset-now`);
           const resetData = await resetRes.json();
           console.log('Backend user reset result:', resetData);
@@ -153,7 +153,7 @@ const Login = () => {
 
       // 3. Also send to backend for server-side Firestore storage
       try {
-        const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:5002';
+        const backendUrl = process.env.REACT_APP_API_URL || 'http://';
         await fetch(`${backendUrl}/api/users/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

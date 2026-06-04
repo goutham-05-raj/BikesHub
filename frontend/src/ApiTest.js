@@ -4,7 +4,7 @@ function ApiTest() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5002/api/health")
+    fetch("http:///api/health")
       .then((res) => res.json())
       .then((data) => setMessage(data.message))
       .catch((err) => console.error("Error connecting to backend:", err));

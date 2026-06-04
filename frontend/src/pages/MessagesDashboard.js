@@ -13,8 +13,8 @@ const MessagesDashboard = () => {
         const fetchData = async () => {
             try {
                 const [msgRes, revRes] = await Promise.all([
-                    fetch('http://localhost:5002/api/messages'),
-                    fetch('http://localhost:5002/api/reviews/all')
+                    fetch('http:///api/messages'),
+                    fetch('http:///api/reviews/all')
                 ]);
 
                 const msgData = await msgRes.json();
