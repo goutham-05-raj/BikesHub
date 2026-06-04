@@ -9,8 +9,13 @@ require('./config/database');
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// Middleware — allow Authorization header from the React dev server
+app.use(cors({
+  origin: [process.env.FRONTEND_URL || 'http://localhost:3000', 'http://localhost:3001'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Routes
@@ -99,6 +104,14 @@ app.get('/api/reset-now', async (req, res) => {
 });
 
 
+
+// Serve Frontend Build
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+});
 
 // Error handling middleware
 const errorHandler = require('./middleware/errorHandler');

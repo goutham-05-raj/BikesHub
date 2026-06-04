@@ -40,9 +40,7 @@ const B2BProductCard = ({ bike }) => {
                     {bike.verified && (
                         <span className="b2b-verified-badge" style={{ background: '#00C853', color: '#fff', fontWeight: 800, padding: '6px 12px', borderRadius: '100px', fontSize: '0.75rem', textTransform: 'uppercase' }}>✓ Verified</span>
                     )}
-                    {bike.status === 'booked' && user?.role !== 'admin' && (
-                        <span className="b2b-booked-badge" style={{ background: '#FF4D6D', color: '#fff', fontWeight: 800, padding: '6px 12px', borderRadius: '100px', fontSize: '0.75rem', textTransform: 'uppercase', boxShadow: '0 4px 12px rgba(255,77,109,0.3)' }}>🔒 Booked</span>
-                    )}
+
                 </div>
             </div>
 
@@ -76,15 +74,9 @@ const B2BProductCard = ({ bike }) => {
                 </div>
 
                 <div className="b2b-card-footer" style={{ display: 'flex', gap: '12px' }}>
-                    {bike.status === 'booked' && user?.role !== 'admin' ? (
-                        <button disabled style={{ flex: 1, textAlign: 'center', background: '#e2e8f0', color: '#94a3b8', border: 'none', padding: '14px', borderRadius: '14px', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: '1rem', cursor: 'not-allowed' }}>
-                            Currently in Transit
-                        </button>
-                    ) : (
                         <Link to={`/book/${bike.id}`} style={{ flex: 1, textAlign: 'center', background: 'linear-gradient(135deg, #16162A, #2A2A40)', color: '#fff', border: 'none', padding: '14px', borderRadius: '14px', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: '1rem', textDecoration: 'none', transition: 'transform 0.2s', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }}>
                             Book Now
                         </Link>
-                    )}
                     <Link to={`/bike/${bike.id}`} style={{ padding: '14px', borderRadius: '14px', background: 'rgba(255,77,109,0.1)', color: '#FF4D6D', textDecoration: 'none', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }}>
                         👁️
                     </Link>

@@ -123,7 +123,7 @@ const LiveTracking = () => {
                 return;
             }
             try {
-                const idToken = await user.getIdToken();
+                const idToken = await user.getIdToken(true);
                 const response = await fetch(`${API_BASE_URL}/api/bookings`, {
                     headers: { 'Authorization': `Bearer ${idToken}` }
                 });

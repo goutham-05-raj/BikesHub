@@ -4,7 +4,7 @@
 - Duplicate files exist in root directory (bikes.js, bikesController.js, etc.) and backend/ directory
 - backend/server.js serves static hardcoded data instead of using database routes
 - Missing dependencies: express-validator in backend/package.json
-- Frontend expects dynamic API responses from localhost:5002/api/bikes, but backend/server.js doesn't integrate with controllers
+- Frontend expects dynamic API responses from /api/bikes, but backend/server.js doesn't integrate with controllers
 - Database initialization script (initDatabase.js) creates tables, but server.js doesn't use them
 - Error handlers are duplicated in backend/middleware/ and backend/utils/middleware/
 

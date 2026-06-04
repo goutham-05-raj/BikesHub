@@ -159,7 +159,7 @@ const Booking = () => {
         createdAt: new Date().toISOString()
       };
 
-      const idToken = await user.getIdToken();
+      const idToken = await user.getIdToken(true); // force-refresh to avoid expired token
 
       const response = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: 'POST',

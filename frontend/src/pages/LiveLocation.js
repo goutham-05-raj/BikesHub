@@ -185,7 +185,7 @@ const LiveLocation = () => {
         if (!user) return;
         const fetch_data = async () => {
             try {
-                const tok = await user.getIdToken();
+                const tok = await user.getIdToken(true);
                 const res = await fetch(`${API_BASE_URL}/api/bookings`, {
                     headers: { Authorization: `Bearer ${tok}` },
                 });

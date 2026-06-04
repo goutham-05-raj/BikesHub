@@ -17,7 +17,7 @@ const Payment = () => {
         const fetchBookingDetails = async () => {
             if (!user) return;
             try {
-                const idToken = await user.getIdToken();
+                const idToken = await user.getIdToken(true);
                 const response = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}`, {
                     headers: { 'Authorization': `Bearer ${idToken}` }
                 });
@@ -44,7 +44,7 @@ const Payment = () => {
         // Simulate real-time processing
         setTimeout(async () => {
             try {
-                const idToken = await user.getIdToken();
+                const idToken = await user.getIdToken(true);
                 const totalAmt = (booking.totalAmount || 0) + 2000 + ((booking.totalAmount || 0) * 0.18);
 
                 const response = await fetch(`${API_BASE_URL}/api/bookings/record-payment`, {

@@ -15,7 +15,7 @@ const BookingsManagement = () => {
     const fetchOrders = async () => {
       if (!user) return;
       try {
-        const idToken = await user.getIdToken();
+        const idToken = await user.getIdToken(true);
         const response = await fetch(`${API_BASE_URL}/api/bookings`, {
           headers: {
             'Authorization': `Bearer ${idToken}`
@@ -28,8 +28,12 @@ const BookingsManagement = () => {
         const ordersList = data.data.map(order => ({
           ...order,
           status: (order.status || 'pending').toLowerCase(),
-          date: new Date(order.created_at || order.createdAt || Date.now()).toLocaleDateString()
+          date: new Date(order.created_at || order.createdAt || Date.now()).toLocaleDateString(),
+          _sortTime: new Date(order.created_at || order.createdAt || 0).getTime()
         }));
+
+        // Sort newest-first — handles mixed Firestore Timestamp vs string fields
+        ordersList.sort((a, b) => b._sortTime - a._sortTime);
 
         setOrders(ordersList);
       } catch (error) {
@@ -52,7 +56,7 @@ const BookingsManagement = () => {
     if (!window.confirm('Are you sure you want to cancel this booking? This will release the bike back to inventory.')) return;
     
     try {
-        const idToken = await user.getIdToken();
+        const idToken = await user.getIdToken(true);
         const response = await fetch(`${API_BASE_URL}/api/bookings/${id}/cancel`, {
           method: 'POST',
           headers: {

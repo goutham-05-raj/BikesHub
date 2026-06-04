@@ -56,25 +56,44 @@ const reconcileBookingStatus = async (bookingDoc) => {
     return data;
 };
 
-// Get all bookings
 exports.getBookings = async (req, res, next) => {
   try {
     if (!db) {
       return res.status(400).json({ success: false, message: 'Firestore not configured' });
     }
 
-    const snapshot = await db.collection('bookings').orderBy('created_at', 'desc').get();
+    // Don't use orderBy — it fails when created_at has mixed types (Timestamp vs string)
+    const snapshot = await db.collection('bookings').get();
     
     const bookings = await Promise.all(snapshot.docs.map(async doc => {
       const reconciledData = await reconcileBookingStatus(doc);
       
+      // Normalize created_at to ISO string
+      let createdISO = null;
+      if (reconciledData.created_at) {
+        createdISO = typeof reconciledData.created_at.toDate === 'function'
+          ? reconciledData.created_at.toDate().toISOString()
+          : reconciledData.created_at;
+      } else if (reconciledData.createdAt) {
+        createdISO = typeof reconciledData.createdAt.toDate === 'function'
+          ? reconciledData.createdAt.toDate().toISOString()
+          : reconciledData.createdAt;
+      }
+
       return {
         id: doc.id,
         ...reconciledData,
-        created_at: reconciledData.created_at ? (typeof reconciledData.created_at.toDate === 'function' ? reconciledData.created_at.toDate().toISOString() : reconciledData.created_at) : null,
+        created_at: createdISO,
         updated_at: reconciledData.updated_at ? (typeof reconciledData.updated_at.toDate === 'function' ? reconciledData.updated_at.toDate().toISOString() : reconciledData.updated_at) : null
       };
     }));
+
+    // Sort newest-first using the normalized ISO string
+    bookings.sort((a, b) => {
+      const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return timeB - timeA;
+    });
 
     res.json({
       success: true,
@@ -135,9 +154,7 @@ exports.createBooking = async (req, res, next) => {
     const docRef = await db.collection('bookings').add(bookingData);
     
     if (req.body.bikeId) {
-        await db.collection('bikes').doc(req.body.bikeId).update({
-            status: 'booked'
-        });
+        // Status update removed so bikes remain available for multiple bookings
     }
 
     const newDoc = await docRef.get();
