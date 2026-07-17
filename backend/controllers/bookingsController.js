@@ -154,7 +154,11 @@ exports.createBooking = async (req, res, next) => {
       created_at: admin.firestore.FieldValue.serverTimestamp()
     };
 
-    const docRef = db.collection('bookings').doc(bookingId);
+    const reverseTimestamp = 9999999999999 - Date.now();
+    const dateStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const docId = `${reverseTimestamp}_${dateStr}_${bookingId}`;
+
+    const docRef = db.collection('bookings').doc(docId);
     await docRef.set(bookingData);
     
     if (req.body.bikeId) {
