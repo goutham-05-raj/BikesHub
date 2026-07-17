@@ -90,8 +90,10 @@ exports.getBookings = async (req, res, next) => {
 
     // Sort newest-first using the normalized ISO string
     bookings.sort((a, b) => {
-      const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
-      const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
+      let timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
+      let timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
+      if (isNaN(timeA)) timeA = 0;
+      if (isNaN(timeB)) timeB = 0;
       return timeB - timeA;
     });
 

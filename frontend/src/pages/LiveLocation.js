@@ -199,9 +199,13 @@ const LiveLocation = () => {
                         const isMine = isAdmin || b.email === user.email;
                         return isNotClosed && isRecent && isMine;
                     });
-                    active.sort((a, b) =>
-                        new Date(b.created_at || 0) - new Date(a.created_at || 0)
-                    );
+                    active.sort((a, b) => {
+                        let timeA = new Date(a.created_at || 0).getTime();
+                        let timeB = new Date(b.created_at || 0).getTime();
+                        if (isNaN(timeA)) timeA = 0;
+                        if (isNaN(timeB)) timeB = 0;
+                        return timeB - timeA;
+                    });
                     if (active.length === 0) {
                         // Demo Mode: Inject multiple mock active bookings if none exist
                         active.push(

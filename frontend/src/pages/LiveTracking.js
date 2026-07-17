@@ -153,11 +153,23 @@ const LiveTracking = () => {
                         }
                     } else {
                         if (myBookings.length > 0) {
-                            myBookings.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+                            myBookings.sort((a, b) => {
+                                let timeA = new Date(a.created_at || a.createdAt || 0).getTime();
+                                let timeB = new Date(b.created_at || b.createdAt || 0).getTime();
+                                if (isNaN(timeA)) timeA = 0;
+                                if (isNaN(timeB)) timeB = 0;
+                                return timeB - timeA;
+                            });
                             setActiveBooking(myBookings[0]);
                             setViewMode('track'); // auto-switch to track when user has bookings
                         } else if (user?.email === 'admin@3535.com' && activeOnes.length > 0) {
-                            activeOnes.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+                            activeOnes.sort((a, b) => {
+                                let timeA = new Date(a.created_at || a.createdAt || 0).getTime();
+                                let timeB = new Date(b.created_at || b.createdAt || 0).getTime();
+                                if (isNaN(timeA)) timeA = 0;
+                                if (isNaN(timeB)) timeB = 0;
+                                return timeB - timeA;
+                            });
                             setActiveBooking(activeOnes[0]);
                             setViewMode('track'); // auto-switch to track for admin too
                         }

@@ -25,15 +25,29 @@ const BookingsManagement = () => {
         if (!response.ok) throw new Error('Failed to fetch orders');
 
         const data = await response.json();
-        const ordersList = data.data.map(order => ({
-          ...order,
-          status: (order.status || 'pending').toLowerCase(),
-          date: new Date(order.created_at || order.createdAt || Date.now()).toLocaleDateString(),
-          _sortTime: new Date(order.created_at || order.createdAt || 0).getTime()
-        }));
+        const ordersList = data.data.map(order => {
+          let rawTime = order.created_at || order.createdAt;
+          let parsedTime = 0;
+          if (rawTime) {
+            const t = new Date(rawTime).getTime();
+            parsedTime = isNaN(t) ? 0 : t;
+          }
+          return {
+            ...order,
+            status: (order.status || 'pending').toLowerCase(),
+            date: parsedTime ? new Date(parsedTime).toLocaleDateString() : 'N/A',
+            _sortTime: parsedTime
+          };
+        });
 
         // Sort newest-first — handles mixed Firestore Timestamp vs string fields
-        ordersList.sort((a, b) => b._sortTime - a._sortTime);
+        ordersList.sort((a, b) => {
+          let timeA = a._sortTime;
+          let timeB = b._sortTime;
+          if (isNaN(timeA)) timeA = 0;
+          if (isNaN(timeB)) timeB = 0;
+          return timeB - timeA;
+        });
 
         setOrders(ordersList);
       } catch (error) {
