@@ -146,14 +146,16 @@ exports.createBooking = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Firestore not configured' });
     }
 
+    const bookingId = generateBookingId();
     const bookingData = {
       ...req.body,
-      booking_id: generateBookingId(),
+      booking_id: bookingId,
       status: 'Pending',
       created_at: admin.firestore.FieldValue.serverTimestamp()
     };
 
-    const docRef = await db.collection('bookings').add(bookingData);
+    const docRef = db.collection('bookings').doc(bookingId);
+    await docRef.set(bookingData);
     
     if (req.body.bikeId) {
         // Status update removed so bikes remain available for multiple bookings
