@@ -2,7 +2,7 @@
 
 BikesHub is a comprehensive B2B marketplace and fleet management platform designed for bike rentals, dealerships, and B2B transactions. It features a robust frontend for users and dealers, and a powerful backend for managing inventory, bookings, and real-time tracking.
 
-**🌟 Live Demo:** [http://3.80.66.157/](http://3.80.66.157/)
+**🌟 Live Demo:** [https://bikes-hub-ten.vercel.app/](https://bikes-hub-ten.vercel.app/)
 
 ## 🚀 Key Features
 
