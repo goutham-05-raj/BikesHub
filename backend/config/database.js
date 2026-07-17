@@ -10,6 +10,10 @@ try {
   let serviceAccount;
   if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+    if (serviceAccount.private_key) {
+      // Fix potential newline escaping issues from env variables
+      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+    }
   } else {
     serviceAccount = require("./serviceAccountKey.json");
   }
@@ -22,8 +26,7 @@ try {
   db = admin.firestore();
   console.log('✅ Firebase connected successfully');
 } catch (error) {
-  console.log('⚠️  Firebase not configured — using static data fallback');
-  console.log('   To connect Firebase, add serviceAccountKey.json to backend/config/ or configure FIREBASE_SERVICE_ACCOUNT_JSON env variable');
+  console.error('❌ Firebase initialization error details:', error);
   // db remains null; controllers will use static data fallback
 }
 
